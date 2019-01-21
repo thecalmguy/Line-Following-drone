@@ -9,6 +9,7 @@ std_msgs::Int32 line_cmd;
 mavros_msgs::RCIn over_switch;
 
 int kill ;
+int line_cmd ;
 
 void rc_cb(const mavros_msgs::RCIn::ConstPtr& msg2){
     over_switch = *msg2;
@@ -31,22 +32,26 @@ int main(int argc, char **argv)
     ros::Rate rate(60.0);
 
     while (ros::ok())
-    {   
+    {
         if(kill<1200)
-        {  
+        {
             RC[0] = 1500;
-            RC[1] = 1500;
+            RC[1] = 1400;
             RC[2] = 1500;
             RC[3] = 1500;
             RC[4] = 1100;
             RC[5] = 1000;
             RC[6] = 1100;
             RC[7] = 1100;
-            if(line_cmd == 2) RC[1] = 1300;
-            if (twist.linear.x == -2) RC[1] = 1700;
-            if (twist.angular.z == 2) RC[0] = 1300;
-            if (twist.angular.z == -2) RC[0] = 1700;
-            ROS_INFO("xyz");
+            
+            if(line_cmd == 1){
+            	RC[0] = 1650; // move rightwards
+            	ROS_INFO("Moving Rightwards");
+            }else if (line_cmd == -1){ 
+            	RC[0] = 1350; // move leftwards
+            	ROS_INFO("Moving Leftwards");
+            }
+            
             radio_pub.publish(rc_ovrd);
             ros::spinOnce();
             rate.sleep();
