@@ -9,7 +9,7 @@ std_msgs::Int32 line_cmd;
 mavros_msgs::RCIn over_switch;
 
 int kill ;
-int line_cmd ;
+int line_cmd_val ;
 
 void rc_cb(const mavros_msgs::RCIn::ConstPtr& msg2){
     over_switch = *msg2;
@@ -18,6 +18,7 @@ void rc_cb(const mavros_msgs::RCIn::ConstPtr& msg2){
 
 void line_cb(const std_msgs::Int32::ConstPtr& msg){
     line_cmd = *msg;
+    line_cmd_val = line_cmd.data;
 }
 
 
@@ -44,10 +45,10 @@ int main(int argc, char **argv)
             RC[6] = 1100;
             RC[7] = 1100;
             
-            if(line_cmd == 1){
+            if(line_cmd_val>100){
             	RC[0] = 1650; // move rightwards
             	ROS_INFO("Moving Rightwards");
-            }else if (line_cmd == -1){ 
+            }else if (line_cmd_val <-100){ 
             	RC[0] = 1350; // move leftwards
             	ROS_INFO("Moving Leftwards");
             }
