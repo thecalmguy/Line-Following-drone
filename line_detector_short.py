@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # license removed for brevity
-import rospy
+#import rospy
 import cv2 
 import numpy as np 
-from geometry_msgs.msg import Twist
+#from geometry_msgs.msg import Twist
 
 def show(img):
 	cv2.imshow('FRAME', img)
@@ -12,25 +12,29 @@ def show(img):
 
 def main_func():
 	#read from camera
-	cap = cv2.VideoCapture(0)
-	pub = rospy.Publisher('vel_control_topic', Twist, queue_size=10)
-	rospy.init_node('line_follower_node', anonymous=True)
-	rate = rospy.Rate(20) # 10hz
+	cap = cv2.VideoCapture('222.mp4')
+	#pub = rospy.Publisher('vel_control_topic', Twist, queue_size=10)
+	#rospy.init_node('line_follower_node', anonymous=True)
+	#rate = rospy.Rate(20) # 10hz
 	# Check if camera opened successfully
 	if (cap.isOpened()== False): 
 		print("Error opening video stream or file")
 	
-	Twist control_msg
+	#Twist control_msg
 	# Read until video is completed
-	while cap.isOpened() and (not rospy.is_shutdown()):
+	while cap.isOpened(): #and (not rospy.is_shutdown()):
 		# Capture frame-by-frame
 		ret, frame = cap.read()
 		if ret == True:
 			# Convert the img to grayscale 
 			gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+			kernel = 9
+			gray_blur = cv2.GaussianBlur(gray,(kernel, kernel),0)
+			kernel2 = np.ones((30,30),np.uint8)
+			erosion = cv2.dilate(gray_blur,kernel2,iterations = 3)
 			# Apply edge detection method on the image 
-			edges = cv2.Canny(gray,50,150,apertureSize = 3)
-			# This returns an array of r and theta values 
+			edges = cv2.Canny(erosion,50,150,apertureSize = 3)
+			# This returns an array of r and theta values  
 			lines = cv2.HoughLines(edges,1,np.pi/180, 100)
 			print(lines)
 			print(lines.shape)
@@ -70,10 +74,10 @@ def main_func():
 			cv2.imshow('Frame',frame)
 		
 			# Press Q on keyboard to  exit
-			if cv2.waitKey(25) & 0xFF == ord('q'):
+			if cv2.waitKey(0) & 0xFF == ord('q'):
 				break
 			
-			control_msg.linear.x =
+			'''control_msg.linear.x =
 			control_msg.linear.y =
 			control_msg.linear.z =
 			control_msg.angular.x =
@@ -81,11 +85,11 @@ def main_func():
 			control_msg.angular.z =
 			
 			pub.publish(control_msg)
-			
+			'''
 			
 		else: 
 			break
-		rate.sleep()
+		#rate.sleep()
 	
 
 	# When everything done, release the video capture object
@@ -94,12 +98,12 @@ def main_func():
 	# Closes all the frames
 	cv2.destroyAllWindows()
 		
-	
-if __name__ == '__main__':
+main_func()
+'''if __name__ == '__main__':
     try:
         main_func()
-    except rospy.ROSInterruptException:
-        pass
+    except #rospy.ROSInterruptException:
+        pass'''
 	
 	
 	
